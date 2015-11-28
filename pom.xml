@@ -63,7 +63,7 @@
 	</contributors>
 
 	<properties>
-		<jogl.version>2.3.2</jogl.version>
+		<jogamp.version>2.3.2</jogamp.version>
 
 		<!-- NB: Avoid platform encoding warning when copying resources. -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
