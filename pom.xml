@@ -84,19 +84,6 @@
 	</dependencies>
 
 	<build>
-		<defaultGoal>install</defaultGoal>
-
-		<sourceDirectory>${basedir}/src/classes/share</sourceDirectory>
-		<resources>
-			<resource>
-				<directory>${project.basedir}/src/classes/share</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-					<exclude>**/package.html</exclude>
-				</excludes>
-			</resource>
-		</resources>
-
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
