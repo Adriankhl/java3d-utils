@@ -37,24 +37,50 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+import org.jogamp.java3d.PolygonAttributes;
 
-    /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
-     */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
+
+public class PolygonAttributesState extends NodeComponentState {
+
+    public PolygonAttributesState( SymbolTableData symbol, Controller control ) {
+        super(symbol, control);
+    }
+
+    @Override
+    public void writeObject( DataOutput out ) throws IOException {
+        super.writeObject( out );
+        PolygonAttributes polyAttr = (PolygonAttributes)node;
+        out.writeBoolean( polyAttr.getBackFaceNormalFlip() );
+        out.writeInt( polyAttr.getCullFace() );
+        out.writeInt( polyAttr.getPolygonMode() );
+        out.writeFloat( polyAttr.getPolygonOffset() );
+        out.writeFloat( polyAttr.getPolygonOffsetFactor() );
+    }
+
+    @Override
+    public void readObject( DataInput in ) throws IOException {
+        super.readObject( in );
+        PolygonAttributes polyAttr = (PolygonAttributes)node;
+        polyAttr.setBackFaceNormalFlip( in.readBoolean() );
+        polyAttr.setCullFace( in.readInt() );
+        polyAttr.setPolygonMode( in.readInt() );
+        polyAttr.setPolygonOffset( in.readFloat() );
+        polyAttr.setPolygonOffsetFactor( in.readFloat() );
+    }
+
+    @Override
+    protected org.jogamp.java3d.SceneGraphObject createNode() {
+        return new PolygonAttributes();
+    }
+
 
 }
+

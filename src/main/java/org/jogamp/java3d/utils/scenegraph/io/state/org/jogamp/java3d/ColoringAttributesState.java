@@ -37,24 +37,48 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+import org.jogamp.java3d.ColoringAttributes;
+import org.jogamp.java3d.SceneGraphObject;
+import org.jogamp.vecmath.Color3f;
 
-    /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
-     */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
+
+public class ColoringAttributesState extends NodeComponentState {
+
+    public ColoringAttributesState( SymbolTableData symbol, Controller control ) {
+        super(symbol, control);
+    }
+
+    @Override
+    public void writeObject( DataOutput out ) throws IOException {
+        super.writeObject( out );
+        ColoringAttributes attr = (ColoringAttributes)node;
+        Color3f clr = new Color3f();
+        attr.getColor( clr );
+        control.writeColor3f( out, clr );
+        out.writeInt( attr.getShadeModel() );
+    }
+
+    @Override
+    public void readObject( DataInput in ) throws IOException {
+        super.readObject( in );
+        ColoringAttributes attr = (ColoringAttributes)node;
+        attr.setColor( control.readColor3f(in) );
+        attr.setShadeModel( in.readInt() );
+    }
+
+    @Override
+    protected SceneGraphObject createNode() {
+        return new ColoringAttributes();
+    }
+
 
 }
+

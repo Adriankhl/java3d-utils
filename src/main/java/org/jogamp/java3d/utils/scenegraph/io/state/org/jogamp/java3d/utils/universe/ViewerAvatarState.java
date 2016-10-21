@@ -37,24 +37,23 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.utils.universe;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
+import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.BranchGroupState;
+import org.jogamp.java3d.utils.universe.ViewerAvatar;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+public class ViewerAvatarState extends BranchGroupState {
 
-    /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
-     */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+    public ViewerAvatarState(SymbolTableData symbol,Controller control) {
+        super(symbol, control);
+    }
+
+    @Override
+    protected org.jogamp.java3d.SceneGraphObject createNode() {
+        return new ViewerAvatar();
+    }
+
 
 }

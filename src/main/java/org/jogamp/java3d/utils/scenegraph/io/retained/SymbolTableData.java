@@ -44,8 +44,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import org.jogamp.java3d.SceneGraphObject;
-
-import org.jogamp.java3d.utils.scenegraph.io.state.javax.media.j3d.SceneGraphObjectState;
+import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
 
 /**
  * Encapsulates all the data for a node which is stored in the Symbol table

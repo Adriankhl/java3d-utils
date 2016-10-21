@@ -54,9 +54,9 @@ import org.jogamp.java3d.SceneGraphObject;
 import org.jogamp.java3d.utils.scenegraph.io.NamedObjectException;
 import org.jogamp.java3d.utils.scenegraph.io.ObjectNotLoadedException;
 import org.jogamp.java3d.utils.scenegraph.io.SceneGraphObjectReferenceControl;
-import org.jogamp.java3d.utils.scenegraph.io.state.javax.media.j3d.NodeComponentState;
-import org.jogamp.java3d.utils.scenegraph.io.state.javax.media.j3d.NullSceneGraphObjectState;
-import org.jogamp.java3d.utils.scenegraph.io.state.javax.media.j3d.SceneGraphObjectState;
+import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.NodeComponentState;
+import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.NullSceneGraphObjectState;
+import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
 
 /**
  * SymbolTable class for SceneGraph I/O.

@@ -45,8 +45,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.jogamp.java3d.BranchGroup;
-
-import org.jogamp.java3d.utils.scenegraph.io.state.javax.media.j3d.SceneGraphObjectState;
+import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
 
 /**
  * Provides the infrastructure for ScenGraphStream Reader and Writer

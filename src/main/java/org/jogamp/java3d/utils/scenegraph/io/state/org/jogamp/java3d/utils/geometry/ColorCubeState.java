@@ -37,24 +37,64 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.utils.geometry;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+import org.jogamp.java3d.SceneGraphObject;
+import org.jogamp.java3d.Shape3D;
+
+import org.jogamp.java3d.utils.geometry.ColorCube;
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
+import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.Shape3DState;
+
+public class ColorCubeState extends Shape3DState {
+
+    private double scale=1.0;
+
+    public ColorCubeState(SymbolTableData symbol,Controller control) {
+	super( symbol, control );
+
+    }
+
+    @Override
+    public void writeConstructorParams( DataOutput out ) throws IOException {
+	super.writeConstructorParams( out );
+
+        out.writeDouble( ((ColorCube)node).getScale() );
+
+    }
+
+    @Override
+    public void readConstructorParams( DataInput in ) throws IOException {
+       super.readConstructorParams(in);
+
+       scale = in.readDouble();
+    }
 
     /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
-     */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+    * Returns true if the groups children should be saved.
+    *
+    * This is overridden by 'black box' groups such a geometry primitives
+    */
+    protected boolean processChildren() {
+        return false;
+    }
+
+    @Override
+    public SceneGraphObject createNode( Class j3dClass ) {
+        Shape3D shape = (Shape3D) createNode( j3dClass, new Class[]{ Double.TYPE }, new Object[] { new Double(scale) } );
+
+        return shape;
+    }
+
+    @Override
+    protected org.jogamp.java3d.SceneGraphObject createNode() {
+        return new ColorCube( scale );
+    }
+
 
 }

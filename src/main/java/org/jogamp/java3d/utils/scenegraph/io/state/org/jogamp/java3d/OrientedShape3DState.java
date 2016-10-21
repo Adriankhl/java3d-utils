@@ -37,24 +37,59 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+import org.jogamp.java3d.OrientedShape3D;
+import org.jogamp.vecmath.Point3f;
+import org.jogamp.vecmath.Vector3f;
 
-    /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
-     */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
+
+public class OrientedShape3DState extends Shape3DState {
+
+    public OrientedShape3DState(SymbolTableData symbol,Controller control) {
+        super( symbol, control );
+
+    }
+
+    @Override
+    public void writeObject( DataOutput out ) throws IOException {
+        super.writeObject( out );
+
+        out.writeInt( ((OrientedShape3D)node).getAlignmentMode() );
+
+        Vector3f vec = new Vector3f();
+        ((OrientedShape3D)node).getAlignmentAxis( vec );
+
+        Point3f point = new Point3f();
+        ((OrientedShape3D)node).getRotationPoint( point );
+
+        control.writeVector3f( out, vec );
+        control.writePoint3f( out, point );
+	out.writeBoolean( ((OrientedShape3D)node).getConstantScaleEnable() );
+	out.writeDouble( ((OrientedShape3D)node).getScale() );
+    }
+
+    @Override
+    public void readObject( DataInput in ) throws IOException {
+        super.readObject( in );
+
+        ((OrientedShape3D)node).setAlignmentMode( in.readInt() );
+        ((OrientedShape3D)node).setAlignmentAxis( control.readVector3f( in ) );
+        ((OrientedShape3D)node).setRotationPoint( control.readPoint3f( in ) );
+        ((OrientedShape3D)node).setConstantScaleEnable( in.readBoolean() );
+        ((OrientedShape3D)node).setScale( in.readDouble() );
+    }
+
+    @Override
+    protected org.jogamp.java3d.SceneGraphObject createNode() {
+        return new OrientedShape3D();
+    }
+
 
 }

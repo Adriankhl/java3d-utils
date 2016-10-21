@@ -49,8 +49,8 @@ import org.jogamp.java3d.Canvas3D;
 import org.jogamp.java3d.CapabilityNotSetException;
 
 import org.jogamp.java3d.utils.scenegraph.io.UnsupportedUniverseException;
-import org.jogamp.java3d.utils.scenegraph.io.state.javax.media.j3d.BranchGroupState;
-import org.jogamp.java3d.utils.scenegraph.io.state.javax.media.j3d.SceneGraphObjectState;
+import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.BranchGroupState;
+import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
 import org.jogamp.java3d.utils.universe.ConfiguredUniverse;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 

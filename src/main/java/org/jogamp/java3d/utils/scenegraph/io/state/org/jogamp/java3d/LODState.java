@@ -37,24 +37,58 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+import org.jogamp.java3d.LOD;
+import org.jogamp.java3d.Switch;
 
-    /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
-     */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
+
+public abstract class LODState extends BehaviorState {
+
+    private int[] switches;
+
+    public LODState(SymbolTableData symbol,Controller control) {
+        super(symbol, control);
+
+        if (node!=null) {
+            switches = new int[ ((LOD)node).numSwitches() ];
+            for( int i=0; i<switches.length; i++)
+                switches[i] = control.getSymbolTable().addReference( ((LOD)node).getSwitch(i) );
+        }
+    }
+
+    @Override
+    public void writeObject( DataOutput out ) throws IOException {
+        super.writeObject( out );
+
+        out.writeInt( switches.length );
+        for( int i=0; i<switches.length; i++)
+            out.writeInt( switches[i] );
+    }
+
+    @Override
+    public void readObject( DataInput in ) throws IOException {
+        super.readObject( in );
+        LOD attr = (LOD)node;
+
+        switches = new int[ in.readInt() ];
+        for( int i=0; i<switches.length; i++)
+            switches[i] = in.readInt();
+    }
+
+    @Override
+    public void buildGraph() {
+        LOD attr = (LOD)node;
+        for(int i=0; i<switches.length; i++)
+            attr.addSwitch( (Switch)control.getSymbolTable().getJ3dNode( switches[i] ) );
+        super.buildGraph(); // Must be last call in method
+    }
 
 }
+

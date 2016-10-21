@@ -37,24 +37,64 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+import org.jogamp.java3d.PointSound;
+import org.jogamp.vecmath.Point3f;
 
-    /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
-     */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
+
+public class PointSoundState extends SoundState {
+
+    public PointSoundState(SymbolTableData symbol,Controller control) {
+        super( symbol, control );
+
+    }
+
+    @Override
+    public void writeObject( DataOutput out ) throws IOException {
+        super.writeObject( out );
+
+        float[] distance = new float[ ((PointSound)node).getDistanceGainLength() ];
+        float[] gain = new float[ distance.length ];
+
+        ((PointSound)node).getDistanceGain( distance, gain );
+        out.writeInt( distance.length );
+        for(int i=0; i<distance.length; i++) {
+            out.writeFloat( distance[i] );
+            out.writeFloat( gain[i] );
+        }
+
+        Point3f pos = new Point3f();
+
+        ((PointSound)node).getPosition( pos );
+        control.writePoint3f( out, pos );
+    }
+
+    @Override
+    public void readObject( DataInput in ) throws IOException {
+        super.readObject( in );
+
+        float[] distance = new float[ in.readInt() ];
+        float[] gain = new float[ distance.length ];
+        for(int i=0; i<distance.length; i++) {
+            distance[i] = in.readFloat();
+            gain[i] = in.readFloat();
+        }
+        ((PointSound)node).setDistanceGain( distance, gain );
+
+        ((PointSound)node).setPosition( control.readPoint3f( in ));
+    }
+
+    @Override
+    protected org.jogamp.java3d.SceneGraphObject createNode() {
+        return new PointSound();
+    }
+
 
 }

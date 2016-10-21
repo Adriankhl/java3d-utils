@@ -37,24 +37,44 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+import org.jogamp.java3d.IndexedGeometryStripArray;
 
-    /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
-     */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
 
+public abstract class IndexedGeometryStripArrayState extends IndexedGeometryArrayState {
+
+    protected int[] stripIndexCounts;
+
+    public IndexedGeometryStripArrayState(SymbolTableData symbol,Controller control) {
+	super( symbol, control );
+    }
+
+    @Override
+    protected void writeConstructorParams( DataOutput out ) throws
+								IOException {
+        super.writeConstructorParams( out );
+
+	stripIndexCounts = new int[((IndexedGeometryStripArray)node).getNumStrips()];
+        ((IndexedGeometryStripArray)node).getStripIndexCounts( stripIndexCounts );
+
+	out.writeInt(stripIndexCounts.length);
+        for(int i=0; i<stripIndexCounts.length; i++)
+            out.writeInt( stripIndexCounts[i] );
+    }
+
+    @Override
+    protected void readConstructorParams( DataInput in ) throws
+							IOException {
+       super.readConstructorParams( in );
+       stripIndexCounts = new int[in.readInt()];
+       for(int i=0; i<stripIndexCounts.length; i++)
+           stripIndexCounts[i] = in.readInt();
+    }
 }

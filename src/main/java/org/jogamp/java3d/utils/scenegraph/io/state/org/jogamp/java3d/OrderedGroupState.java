@@ -37,24 +37,49 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+import org.jogamp.java3d.OrderedGroup;
 
-    /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
-     */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
+
+public class OrderedGroupState extends GroupState {
+
+    /** Creates new BranchGroupState */
+    public OrderedGroupState(SymbolTableData symbol,Controller control) {
+        super( symbol, control );
+    }
+
+    @Override
+    public void writeObject( DataOutput out ) throws IOException {
+	super.writeObject( out );
+
+	int[] childIndexOrder = ((OrderedGroup)node).getChildIndexOrder();
+	out.writeInt( childIndexOrder.length );
+	for ( int i=0;i<childIndexOrder.length;i++ ) {
+	    out.writeInt( childIndexOrder[ i ] );
+	}
+    }
+
+    @Override
+    public void readObject( DataInput in ) throws IOException {
+	super.readObject( in );
+
+	int[] childIndexOrder = new int[ in.readInt() ];
+	for ( int i=0;i<childIndexOrder.length;i++ ) {
+	    childIndexOrder[ i ] = in.readInt();
+	}
+	((OrderedGroup)node).setChildIndexOrder( childIndexOrder );
+    }
+
+    @Override
+    protected org.jogamp.java3d.SceneGraphObject createNode() {
+        return new OrderedGroup();
+    }
 
 }

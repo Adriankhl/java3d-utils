@@ -37,24 +37,53 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+import org.jogamp.java3d.Alpha;
+import org.jogamp.java3d.RotationInterpolator;
+import org.jogamp.java3d.SceneGraphObject;
+import org.jogamp.java3d.TransformGroup;
 
-    /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
-     */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
 
+public class RotationInterpolatorState extends TransformInterpolatorState {
+
+    public RotationInterpolatorState(SymbolTableData symbol,Controller control) {
+        super( symbol, control );
+
+    }
+
+    @Override
+    public void writeObject( DataOutput out ) throws IOException {
+        super.writeObject( out );
+
+        RotationInterpolator interp = (RotationInterpolator)node;
+        out.writeFloat( interp.getMinimumAngle() );
+        out.writeFloat( interp.getMaximumAngle() );
+    }
+
+    @Override
+    public void readObject( DataInput in ) throws IOException {
+        super.readObject( in );
+
+        RotationInterpolator interp = (RotationInterpolator)node;
+        interp.setMinimumAngle( in.readFloat() );
+        interp.setMaximumAngle( in.readFloat() );
+    }
+
+    @Override
+    public SceneGraphObject createNode( Class j3dClass ) {
+        return createNode( j3dClass, new Class[] { Alpha.class, TransformGroup.class },
+        new Object[] { null, null } );
+    }
+
+    @Override
+    protected org.jogamp.java3d.SceneGraphObject createNode() {
+        return new RotationInterpolator( null, null );
+    }
 }

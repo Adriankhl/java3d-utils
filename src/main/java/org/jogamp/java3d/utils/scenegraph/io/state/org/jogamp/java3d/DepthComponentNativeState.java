@@ -37,24 +37,59 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import org.jogamp.java3d.DepthComponentNative;
+import org.jogamp.java3d.SceneGraphObject;
+
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
 
 /**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
+ * We have no access to the data inside a DepthComponentNative and
+ * it doesn't really make sense anyway, so we're going to save the
+ * width and height and not save/restore any of the data.
  */
-public interface SceneGraphStateProvider {
+public class DepthComponentNativeState extends NodeComponentState {
 
-    /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
-     */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+    private int height;
+    private int width;
+
+    public DepthComponentNativeState ( SymbolTableData symbol, Controller control ) {
+        super(symbol, control);
+    }
+
+    @Override
+    public void writeConstructorParams( DataOutput out ) throws IOException {
+	super.writeConstructorParams( out );
+	out.writeInt( width );
+	out.writeInt( height );
+    }
+
+    @Override
+    public void readConstructorParams( DataInput in ) throws IOException {
+	super.readConstructorParams( in );
+
+	width = in.readInt();
+	height = in.readInt();
+    }
+
+    @Override
+    public SceneGraphObject createNode( Class j3dClass ) {
+        return createNode( j3dClass, new Class[] { Integer.TYPE,
+						   Integer.TYPE } ,
+				     new Object[] { new Integer( width ),
+						    new Integer( height ) } );
+    }
+
+    @Override
+    protected org.jogamp.java3d.SceneGraphObject createNode() {
+        return new DepthComponentNative( width, height );
+    }
+
 
 }

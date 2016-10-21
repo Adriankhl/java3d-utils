@@ -37,24 +37,52 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.utils.geometry;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+import org.jogamp.java3d.utils.geometry.Primitive;
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
+import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.GroupState;
 
-    /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
-     */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+public class PrimitiveState extends GroupState {
 
+    protected int primflags;
+
+    public PrimitiveState( SymbolTableData symbol, Controller control ) {
+	super( symbol, control );
+
+    }
+
+    @Override
+    public void writeConstructorParams( DataOutput out ) throws IOException {
+	super.writeConstructorParams( out );
+
+        out.writeInt( ((Primitive)node).getPrimitiveFlags() );
+    }
+
+    @Override
+    public void readConstructorParams( DataInput in ) throws IOException {
+       super.readConstructorParams(in);
+
+       primflags = in.readInt();
+    }
+
+    @Override
+    public void buildGraph() {
+        super.buildGraph(); // This must be the last call in the method
+    }
+
+  /**
+   * Returns true if the groups children should be saved.
+   *
+   * This is overridden by 'black box' groups such a geometry primitives
+   */
+  @Override
+  protected boolean processChildren() {
+      return false;
+  }
 }

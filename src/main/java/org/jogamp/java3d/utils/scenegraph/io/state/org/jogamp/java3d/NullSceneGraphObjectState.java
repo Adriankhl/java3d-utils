@@ -37,24 +37,64 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+import org.jogamp.java3d.SceneGraphObject;
+
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
+
+public class NullSceneGraphObjectState extends SceneGraphObjectState {
+
+    SymbolTableData symbolTableData;
 
     /**
-     * Returns the State class
+     * Dummy class to represent a null object in the scene graph
      *
-     * @return Class that will perform the IO for the SceneGraphObject
      */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+    public NullSceneGraphObjectState(SymbolTableData symbol,Controller control) {
+        super( null, control );
+        symbolTableData = new SymbolTableData( -1, null, this, -1 );
+    }
+
+    /**
+     * DO NOT call symbolTable.addReference in writeObject as this (may)
+     * result in a concurrentModificationException.
+     *
+     * All references should be created in the constructor
+     */
+    @Override
+    public void writeObject( DataOutput out ) throws IOException {
+    }
+
+    @Override
+    public void readObject( DataInput in ) throws IOException {
+    }
+
+    @Override
+    public SceneGraphObject getNode() {
+        return null;
+    }
+
+    @Override
+    public int getNodeID() {
+        return -1;
+    }
+
+    @Override
+    public SymbolTableData getSymbol() {
+        return symbolTableData;
+    }
+
+
+    @Override
+    protected org.jogamp.java3d.SceneGraphObject createNode() {
+        return null;
+    }
+
 
 }

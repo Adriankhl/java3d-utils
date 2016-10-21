@@ -37,24 +37,55 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.java3d.TransformGroup;
 
-    /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
-     */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
+
+public class TransformGroupState extends GroupState {
+
+    /** Creates new BranchGroupState */
+    public TransformGroupState( SymbolTableData symbol, Controller control ) {
+        super( symbol, control );
+    }
+
+    @Override
+    public void writeObject( DataOutput out ) throws IOException {
+        super.writeObject( out );
+        Transform3D trans = new Transform3D();
+        ((TransformGroup)node).getTransform( trans );
+        double[] matrix = new double[16];
+        trans.get( matrix );
+
+        for(int i=0; i<16; i++)
+            out.writeDouble( matrix[i] );
+
+    }
+
+    @Override
+    public void readObject( DataInput in ) throws IOException {
+        super.readObject( in );
+        Transform3D trans = new Transform3D();
+        double[] matrix = new double[16];
+
+        for(int i=0; i<16; i++)
+            matrix[i] = in.readDouble();
+
+        trans.set( matrix );
+        ((TransformGroup)node).setTransform( trans );
+    }
+
+    @Override
+    protected org.jogamp.java3d.SceneGraphObject createNode() {
+        return new TransformGroup();
+    }
+
 
 }

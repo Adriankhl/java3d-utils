@@ -78,10 +78,10 @@ import org.jogamp.java3d.utils.scenegraph.io.NamedObjectException;
 import org.jogamp.java3d.utils.scenegraph.io.ObjectNotLoadedException;
 import org.jogamp.java3d.utils.scenegraph.io.SceneGraphStateProvider;
 import org.jogamp.java3d.utils.scenegraph.io.UnsupportedUniverseException;
-import org.jogamp.java3d.utils.scenegraph.io.state.com.sun.j3d.utils.universe.SimpleUniverseState;
-import org.jogamp.java3d.utils.scenegraph.io.state.javax.media.j3d.ImageComponentState;
-import org.jogamp.java3d.utils.scenegraph.io.state.javax.media.j3d.NullSceneGraphObjectState;
-import org.jogamp.java3d.utils.scenegraph.io.state.javax.media.j3d.SceneGraphObjectState;
+import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.ImageComponentState;
+import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.NullSceneGraphObjectState;
+import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.utils.universe.SimpleUniverseState;
 import org.jogamp.java3d.utils.universe.ConfiguredUniverse;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 

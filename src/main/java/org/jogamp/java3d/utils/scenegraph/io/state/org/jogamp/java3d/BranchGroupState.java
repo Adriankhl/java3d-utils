@@ -37,24 +37,24 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import org.jogamp.java3d.BranchGroup;
+import org.jogamp.java3d.SceneGraphObject;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
 
-    /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
-     */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+public class BranchGroupState extends GroupState {
+
+    /** Creates new BranchGroupState */
+    public BranchGroupState( SymbolTableData symbol, Controller control ) {
+        super( symbol, control );
+    }
+
+    @Override
+    protected SceneGraphObject createNode() {
+        return new BranchGroup();
+    }
 
 }

@@ -37,24 +37,44 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+import org.jogamp.java3d.GeometryStripArray;
 
-    /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
-     */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
 
+public abstract class GeometryStripArrayState extends GeometryArrayState {
+
+    protected int[] stripVertexCounts;
+
+    public GeometryStripArrayState( SymbolTableData symbol, Controller control ) {
+	super( symbol, control );
+    }
+
+    @Override
+    protected void writeConstructorParams( DataOutput out ) throws
+								IOException {
+        super.writeConstructorParams( out );
+
+	stripVertexCounts = new int[((GeometryStripArray)node).getNumStrips()];
+        ((GeometryStripArray)node).getStripVertexCounts( stripVertexCounts );
+
+	out.writeInt(stripVertexCounts.length);
+        for(int i=0; i<stripVertexCounts.length; i++)
+            out.writeInt( stripVertexCounts[i] );
+    }
+
+    @Override
+    protected void readConstructorParams( DataInput in ) throws
+							IOException {
+       super.readConstructorParams( in );
+       stripVertexCounts = new int[in.readInt()];
+       for(int i=0; i<stripVertexCounts.length; i++)
+           stripVertexCounts[i] = in.readInt();
+    }
 }

@@ -37,24 +37,30 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
-
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.utils.image;
 
 /**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
+ * The listener interface which is called when a ImageComponent2DURL is
+ * loaded from the scenegraph file
  */
-public interface SceneGraphStateProvider {
+public interface ImageComponent2DURLIOListener {
 
     /**
-     * Returns the State class
+     * The listener method which is called when a ImageComponent2DURL is
+     * loaded from the scenegraph file.
      *
-     * @return Class that will perform the IO for the SceneGraphObject
+     * This method must return a valid ImageComponent2DURL, the returned object
+     * will be placed in the scene graph.
+     *
+     * @param format The image format from ImageComponent
+     * @param width The image width from ImageComponent
+     * @param height The image height from ImageComponent
+     * @param byReference The byReference flag from ImageComponent
+     * @param yUp The yUp flag from ImageComponent
+     * @param url The URL for the image component
      */
-    public Class<? extends SceneGraphObjectState> getStateClass();
-
+    public ImageComponent2DURL createImageComponent(
+            int format, int width, int height, boolean byReference, boolean yUp,
+            java.net.URL url );
 }
+

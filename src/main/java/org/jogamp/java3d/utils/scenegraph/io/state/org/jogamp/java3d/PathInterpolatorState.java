@@ -37,24 +37,43 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+import org.jogamp.java3d.PathInterpolator;
 
-    /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
-     */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
 
+public abstract class PathInterpolatorState extends TransformInterpolatorState {
+
+    protected float[] knots;
+
+    public PathInterpolatorState( SymbolTableData symbol,Controller control ) {
+        super( symbol, control );
+    }
+
+    // PathInterpolator.setKnots(float[]) is protected so we can only set the
+    // knots in the constructor
+
+    @Override
+    public void writeConstructorParams( DataOutput out ) throws IOException {
+        super.writeConstructorParams( out );
+        knots = new float[ ((PathInterpolator)node).getArrayLengths() ];
+        out.writeInt( knots.length );
+        ((PathInterpolator)node).getKnots( knots );
+        for(int i=0; i<knots.length; i++)
+            out.writeFloat( knots[i] );
+    }
+
+    @Override
+    public void readConstructorParams( DataInput in ) throws IOException {
+        super.readConstructorParams( in );
+        knots = new float[ in.readInt() ];
+        for(int i=0; i<knots.length; i++)
+            knots[i] = in.readFloat();
+    }
 }

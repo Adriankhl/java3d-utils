@@ -37,24 +37,51 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+import org.jogamp.java3d.Alpha;
+import org.jogamp.java3d.Interpolator;
+
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
+
+public abstract class InterpolatorState extends BehaviorState {
+
+    private int alpha=0;
+
+    public InterpolatorState(SymbolTableData symbol,Controller control) {
+        super( symbol, control );
+    }
+
+    @Override
+    public void writeObject( DataOutput out ) throws IOException {
+        super.writeObject( out );
+        out.writeInt( control.getSymbolTable().addReference( ((Interpolator)node).getAlpha() ));
+    }
+
+    @Override
+    public void readObject( DataInput in ) throws IOException {
+        super.readObject( in );
+        alpha = in.readInt();
+    }
 
     /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
+     * Called when this component reference count is incremented.
+     * Allows this component to update the reference count of any components
+     * that it references.
      */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+    public void addSubReference() {
+        control.getSymbolTable().incNodeComponentRefCount( alpha );
+    }
+
+    @Override
+    public void buildGraph() {
+        ((Interpolator)node).setAlpha( (Alpha)control.getSymbolTable().getJ3dNode( alpha ));
+        super.buildGraph(); // Must be last call in method
+    }
 
 }

@@ -37,24 +37,50 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+import org.jogamp.java3d.LineAttributes;
 
-    /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
-     */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
+
+public class LineAttributesState extends NodeComponentState {
+
+    public LineAttributesState( SymbolTableData symbol, Controller control ) {
+        super(symbol, control);
+    }
+
+    @Override
+    public void writeObject( DataOutput out ) throws IOException {
+        super.writeObject( out );
+        LineAttributes attr = (LineAttributes)node;
+        out.writeBoolean( attr.getLineAntialiasingEnable() );
+        out.writeInt( attr.getLinePattern() );
+        out.writeFloat( attr.getLineWidth() );
+        out.writeInt( attr.getPatternMask() );
+        out.writeInt( attr.getPatternScaleFactor() );
+    }
+
+    @Override
+    public void readObject( DataInput in ) throws IOException {
+        super.readObject( in );
+        LineAttributes attr = (LineAttributes)node;
+        attr.setLineAntialiasingEnable( in.readBoolean() );
+        attr.setLinePattern( in.readInt() );
+        attr.setLineWidth( in.readFloat() );
+        attr.setPatternMask( in.readInt() );
+        attr.setPatternScaleFactor( in.readInt() );
+    }
+
+    @Override
+    protected org.jogamp.java3d.SceneGraphObject createNode() {
+        return new LineAttributes();
+    }
+
 
 }
+

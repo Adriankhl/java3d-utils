@@ -37,24 +37,40 @@
  *
  */
 
-package org.jogamp.java3d.utils.scenegraph.io;
+package org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d;
 
-import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
+import org.jogamp.java3d.LineStripArray;
+import org.jogamp.java3d.SceneGraphObject;
 
-/**
- * This interface allows developers to provide their own custom IO control for
- * subclasses of SceneGraphObjects. As the Scene Graph is being saved any
- * SceneGraphObject in the graph that implements this interface must provide
- * it's state class which is responsible for saving the entire state of
- * that object.
- */
-public interface SceneGraphStateProvider {
+import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
+import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
 
-    /**
-     * Returns the State class
-     *
-     * @return Class that will perform the IO for the SceneGraphObject
-     */
-    public Class<? extends SceneGraphObjectState> getStateClass();
+public class LineStripArrayState extends GeometryStripArrayState {
+
+    public LineStripArrayState(SymbolTableData symbol,Controller control) {
+        super( symbol, control );
+    }
+
+    @Override
+    public SceneGraphObject createNode( Class j3dClass ) {
+        return createNode( j3dClass, new Class[] {
+                                            Integer.TYPE,
+                                            Integer.TYPE,
+                                            Integer.TYPE,
+                                            texCoordSetMap.getClass(),
+                                            stripVertexCounts.getClass()
+                                        },
+                                        new Object[] { new Integer( vertexCount ),
+                                                     new Integer( vertexFormat ),
+                                                     new Integer( texCoordSetCount ),
+                                                     texCoordSetMap,
+                                                     stripVertexCounts } );
+    }
+
+
+    @Override
+    protected org.jogamp.java3d.SceneGraphObject createNode() {
+        return new LineStripArray( vertexCount, vertexFormat, texCoordSetCount, texCoordSetMap, stripVertexCounts );
+    }
 
 }
