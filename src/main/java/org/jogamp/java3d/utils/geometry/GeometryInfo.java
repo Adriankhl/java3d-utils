@@ -211,6 +211,9 @@ public class GeometryInfo {
 
   private boolean coordOnly = false;
 
+  private int vertexAttrCount = 0;
+
+  private int[] vertexAttrSizes = null;
 
 
   /**
@@ -1513,6 +1516,11 @@ public class GeometryInfo {
       this.contourCounts = contourCounts;
   } // End of setContourCounts
 
+  public void setVertexAttributes(int vertexAttrCount, int[] vertexAttrSizes)
+	{
+		this.vertexAttrCount = vertexAttrCount;
+		this.vertexAttrSizes = vertexAttrSizes;
+	}
 
 
   /**
@@ -2169,6 +2177,9 @@ public class GeometryInfo {
 	  vertexFormat |= GeometryArray.TEXTURE_COORDINATE_3;
       else if (texCoordDim == 4)
 	  vertexFormat |= GeometryArray.TEXTURE_COORDINATE_4;
+      
+      if (vertexAttrCount > 0)
+			vertexFormat |= GeometryArray.VERTEX_ATTRIBUTES;
 
       return vertexFormat;
   } // End of getVertexFormat
@@ -2566,26 +2577,26 @@ public class GeometryInfo {
       switch (prim) {
 	  case TRIANGLE_ARRAY:
 	      TriangleArray ta = new TriangleArray(vertexCount, vertexFormat,
-		      texCoordSetCount, texCoordSetMap);
+		      texCoordSetCount, texCoordSetMap, vertexAttrCount, vertexAttrSizes);
 	      ga = (GeometryArray)ta;
 	      break;
 
 	  case QUAD_ARRAY:
 	      QuadArray qa = new QuadArray(vertexCount, vertexFormat,
-		      texCoordSetCount, texCoordSetMap);
+		      texCoordSetCount, texCoordSetMap, vertexAttrCount, vertexAttrSizes);
 	      ga = (GeometryArray)qa;
 	      break;
 
 	  case TRIANGLE_STRIP_ARRAY:
 	      TriangleStripArray tsa = new TriangleStripArray(vertexCount,
-		      vertexFormat, texCoordSetCount, texCoordSetMap,
+		      vertexFormat, texCoordSetCount, texCoordSetMap, vertexAttrCount, vertexAttrSizes,
 		      stripCounts);
 	      ga = (GeometryArray)tsa;
 	      break;
 
 	  case TRIANGLE_FAN_ARRAY:
 	      TriangleFanArray tfa = new TriangleFanArray(vertexCount,
-		      vertexFormat, texCoordSetCount, texCoordSetMap,
+		      vertexFormat, texCoordSetCount, texCoordSetMap, vertexAttrCount, vertexAttrSizes,
 		      stripCounts);
 	      ga = (GeometryArray)tfa;
 	      break;
@@ -2745,28 +2756,28 @@ public class GeometryInfo {
       switch (prim) {
 	  case TRIANGLE_ARRAY:
 	      IndexedTriangleArray ta = new IndexedTriangleArray(vertexCount,
-		      vertexFormat, texCoordSetCount, texCoordSetMap,
+		      vertexFormat, texCoordSetCount, texCoordSetMap, vertexAttrCount, vertexAttrSizes,
 		      coordinateIndices.length);
 	      ga = (IndexedGeometryArray)ta;
 	      break;
 
 	  case QUAD_ARRAY:
 	      IndexedQuadArray qa = new IndexedQuadArray(vertexCount,
-		      vertexFormat, texCoordSetCount, texCoordSetMap,
+		      vertexFormat, texCoordSetCount, texCoordSetMap, vertexAttrCount, vertexAttrSizes,
 		      coordinateIndices.length);
 	      ga = (IndexedGeometryArray)qa;
 	      break;
 	  case TRIANGLE_STRIP_ARRAY:
 	      IndexedTriangleStripArray tsa = new IndexedTriangleStripArray(
 		      vertexCount, vertexFormat, texCoordSetCount,
-		      texCoordSetMap, coordinateIndices.length, stripCounts);
+		      texCoordSetMap, vertexAttrCount, vertexAttrSizes, coordinateIndices.length, stripCounts);
 	      ga = (IndexedGeometryArray)tsa;
 	      break;
 
 	  case TRIANGLE_FAN_ARRAY:
 	      IndexedTriangleFanArray tfa = new IndexedTriangleFanArray(
 		      vertexCount, vertexFormat, texCoordSetCount,
-		      texCoordSetMap, coordinateIndices.length, stripCounts);
+		      texCoordSetMap, vertexAttrCount, vertexAttrSizes, coordinateIndices.length, stripCounts);
 	      ga = (IndexedGeometryArray)tfa;
 	      break;
       }
