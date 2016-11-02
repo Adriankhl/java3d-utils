@@ -42,6 +42,7 @@ package org.jogamp.java3d.utils.geometry;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.jogamp.java3d.GeometryArray;
@@ -1564,25 +1565,18 @@ public class GeometryInfo {
   private class IndexRow {
     int[] val;
     int size;
-    private static final int HASHCONST = 0xBABEFACE;
+    //private static final int HASHCONST = 0xBABEFACE;
 
     @Override
     public int hashCode()
     {
-      int bits = 0;
-      for (int i = 0 ; i < size ; i++) {
-	bits ^= (bits * HASHCONST) << 2;
-      }
-      return bits;
+    	return Arrays.hashCode(val);
     } // End of IndexRow.hashCode
 
     @Override
     public boolean equals(Object obj)
     {
-      for (int i = 0 ; i < size ; i++) {
-	if (((IndexRow)obj).get(i) != val[i]) return false;
-      }
-      return true;
+    	return Arrays.equals(val, ((IndexRow) obj).val);
     } // End of IndexRow.equals()
 
     public int get(int index)
