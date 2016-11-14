@@ -102,7 +102,7 @@ public class SimpleShaderAppearance extends ShaderAppearance
 	 * otherwise simple poly appearance
 	 * @param color
 	 */
-	private SimpleShaderAppearance(Color3f color, boolean lit, boolean hasTexture)
+	public SimpleShaderAppearance(Color3f color, boolean lit, boolean hasTexture)
 	{
 		if (lit)
 		{
