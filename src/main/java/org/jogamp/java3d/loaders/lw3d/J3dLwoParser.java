@@ -230,7 +230,7 @@ class J3dLwoParser extends LwoParser {
 		    Stripifier st = new Stripifier();
 		    st.stripify(gi);
 		    //PJ nio is much faster
-		    object = gi.getGeometryArray(true, true, true);
+		    object = gi.getGeometryArray(true, false, true);
 		    debugOutputLn(LINE_TRACE, "done.");
 		}
 		else {
