@@ -229,7 +229,8 @@ class J3dLwoParser extends LwoParser {
 		    ng.generateNormals(gi);
 		    Stripifier st = new Stripifier();
 		    st.stripify(gi);
-		    object = gi.getGeometryArray(true, true, false);
+		    //PJ nio is much faster
+		    object = gi.getGeometryArray(true, true, true);
 		    debugOutputLn(LINE_TRACE, "done.");
 		}
 		else {

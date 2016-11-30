@@ -1181,8 +1181,8 @@ public class ObjectFile implements Loader {
 		// Put geometry into Shape3d
 		Shape3D shape = new Shape3D();
 		// issue 638; default to BY_COPY for consistency
-		//PJ: gl2es2 requires by ref
-		shape.setGeometry(gi.getGeometryArray(true, false, false));
+		//PJ: gl2es2 requires by ref, and nio is much faster
+		shape.setGeometry(gi.getGeometryArray(true, false, true));
 
 		String matName = (String)groupMaterials.get(curname);
 		materials.assignMaterial(matName, shape);
