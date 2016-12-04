@@ -56,7 +56,7 @@ import org.jogamp.vecmath.Vector3f;
  * front facing when the faces are rotated 90 toward the viewer.
  * <p>
  * By default all primitives with the same parameters share their
- * geometry (e.g., you can have 50 shperes in your scene, but the
+ * geometry (e.g., you can have 50 spheres in your scene, but the
  * geometry is stored only once). A change to one primitive will
  * effect all shared nodes.  Another implication of this
  * implementation is that the capabilities of the geometry are shared,
