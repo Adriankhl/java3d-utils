@@ -25,14 +25,25 @@
 			<organizationUrl>http://jogamp.org/</organizationUrl>
 		</developer>
 		<developer>
-			<id>hharrison</id>
+			<id>philjord</id>
+			<name>Philip Jordan</name>
+			<email>philjord@ihug.co.nz</email>
+			<url>https://github.com/philjord</url>
+			<organization>JogAmp</organization>
+			<organizationUrl>http://jogamp.org/</organizationUrl>
+			<roles>
+				<role>maintainer</role>
+			</roles>
+			<timezone>+12</timezone>
+		</developer>
+	</developers>
+	<contributors>
+		<contributor>
 			<name>Harvey Harrison</name>
 			<url>https://github.com/hharrison</url>
 			<organization>JogAmp</organization>
 			<organizationUrl>http://jogamp.org/</organizationUrl>
-		</developer>
-	</developers>
-	<contributors>
+		</contributor>
 		<contributor>
 			<name>Kevin Rushforth</name>
 			<url>https://www.linkedin.com/in/kevin-rushforth-8ba3b43</url>
