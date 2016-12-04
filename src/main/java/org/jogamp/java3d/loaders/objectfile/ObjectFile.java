@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.jogamp.java3d.Appearance;
 import org.jogamp.java3d.BranchGroup;
 import org.jogamp.java3d.Shape3D;
 import org.jogamp.vecmath.Point3f;
@@ -1180,12 +1181,11 @@ public class ObjectFile implements Loader {
 
 		// Put geometry into Shape3d
 		Shape3D shape = new Shape3D();
-		// issue 638; default to BY_COPY for consistency
 		//PJ: gl2es2 requires by ref, and nio is much faster
 		shape.setGeometry(gi.getGeometryArray(true, false, true));
 
 		String matName = (String)groupMaterials.get(curname);
-		materials.assignMaterial(matName, shape);
+		materials.assignMaterial(matName, shape, createAppearance());
 
 		group.addChild(shape);
 		scene.addNamedObject(curname, shape);
@@ -1203,6 +1203,17 @@ public class ObjectFile implements Loader {
 
 
     /**
+     * Override to provide a custom appearance, for example
+     * a ShaderAppearance with shaders
+     * @return
+     */
+    public Appearance createAppearance()
+	{
+		return new Appearance();
+	}
+
+
+	/**
      * The Object File is loaded from the already opened file.
      * To attach the model to your scene, call getSceneGroup() on
      * the Scene object passed back, and attach the returned

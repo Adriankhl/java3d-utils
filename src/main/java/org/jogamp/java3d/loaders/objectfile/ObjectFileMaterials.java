@@ -98,14 +98,14 @@ class ObjectFileMaterials implements ImageObserver {
     }
 
 
-    void assignMaterial(String matName, Shape3D shape) {
+    void assignMaterial(String matName, Shape3D shape, Appearance a) {
 	ObjectFileMaterial p = null;
 
 	if ((DEBUG & 1) != 0) System.out.println("Color " + matName);
 
 	Material m = new Material();
 	p = (ObjectFileMaterial)materials.get(matName);
-	Appearance a = new Appearance();
+ 
 
 	if (p != null) {
 	    // Set ambient & diffuse color
