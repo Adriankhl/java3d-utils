@@ -43,7 +43,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import org.jogamp.java3d.BranchGroup;
 import org.jogamp.java3d.Canvas3D;
@@ -51,8 +51,6 @@ import org.jogamp.java3d.HiResCoord;
 import org.jogamp.java3d.Locale;
 import org.jogamp.java3d.Transform3D;
 import org.jogamp.java3d.TransformGroup;
-import org.jogamp.vecmath.Matrix4d;
-
 import org.jogamp.java3d.utils.scenegraph.io.retained.Controller;
 import org.jogamp.java3d.utils.scenegraph.io.retained.SymbolTableData;
 import org.jogamp.java3d.utils.scenegraph.io.state.org.jogamp.java3d.SceneGraphObjectState;
@@ -62,6 +60,7 @@ import org.jogamp.java3d.utils.universe.PlatformGeometry;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.java3d.utils.universe.ViewerAvatar;
 import org.jogamp.java3d.utils.universe.ViewingPlatform;
+import org.jogamp.vecmath.Matrix4d;
 
 public class SimpleUniverseState extends java.lang.Object {
 
@@ -152,13 +151,13 @@ public class SimpleUniverseState extends java.lang.Object {
 
     private void writeLocales( DataOutput out ) throws IOException {
 
-	Enumeration<Locale> allLocales = universe.getAllLocales();
+    	Iterator<Locale> allLocales = universe.getAllLocales();
         out.writeInt( universe.numLocales() );
         localeBGs = new ArrayList( universe.numLocales() );
         int currentLocale = 0;
         int graphID = 0;
-        while( allLocales.hasMoreElements() ) {
-		Locale locale = allLocales.nextElement();
+        while( allLocales.hasNext() ) {
+		Locale locale = allLocales.next();
             HiResCoord hiRes = new HiResCoord();
             writeHiResCoord( out, hiRes );
             int bgs[];
@@ -168,9 +167,9 @@ public class SimpleUniverseState extends java.lang.Object {
                 bgs = new int[locale.numBranchGraphs()];
             out.writeInt( bgs.length );
             int count=0;
-            Enumeration e = locale.getAllBranchGraphs();
-            while( e.hasMoreElements() ) {
-                BranchGroup bg = (BranchGroup)e.nextElement();
+            Iterator<BranchGroup> e = locale.getAllBranchGraphs();
+            while( e.hasNext() ) {
+                BranchGroup bg = e.next();
                 if (!(bg instanceof ViewingPlatform)) {
                     control.getSymbolTable().addBranchGraphReference( bg, graphID );
                     bgs[count] = graphID++;
@@ -213,9 +212,9 @@ public class SimpleUniverseState extends java.lang.Object {
      */
     public void buildGraph() {
         Locale locale;
-	Enumeration<Locale> e = universe.getAllLocales();
+        Iterator<Locale> e = universe.getAllLocales();
         for( int i=0; i<localeBGs.size(); i++) {
-		locale = e.nextElement();
+		locale = e.next();
             int[] bgs = (int[])localeBGs.get(i);
             for(int j=0; j<bgs.length; j++) {
                 SymbolTableData symbol = control.getSymbolTable().getBranchGraphRoot( bgs[j] );
@@ -277,11 +276,11 @@ public class SimpleUniverseState extends java.lang.Object {
      * Reattach each BranchGraph to the Locale(s)
      */
     public void attachAllGraphs() {
-	Enumeration<Locale> e = universe.getAllLocales();
+    	Iterator<Locale> e = universe.getAllLocales();
         Locale locale;
 
         for( int i=0; i<localeBGs.size(); i++) {
-		locale = e.nextElement();
+		locale = e.next();
             int[] bgs = (int[])localeBGs.get(i);
             for(int j=0; j<bgs.length; j++) {
                 SymbolTableData symbol = control.getSymbolTable().getBranchGraphRoot( bgs[j] );

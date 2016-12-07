@@ -40,7 +40,7 @@
 package org.jogamp.java3d.utils.behaviors.vp ;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.jogamp.java3d.Appearance;
@@ -56,14 +56,8 @@ import org.jogamp.java3d.TransformGroup;
 import org.jogamp.java3d.TransparencyAttributes;
 import org.jogamp.java3d.View;
 import org.jogamp.java3d.WakeupCondition;
+import org.jogamp.java3d.WakeupCriterion;
 import org.jogamp.java3d.WakeupOnElapsedFrames;
-import org.jogamp.vecmath.AxisAngle4d;
-import org.jogamp.vecmath.Color3f;
-import org.jogamp.vecmath.Matrix3d;
-import org.jogamp.vecmath.Matrix4d;
-import org.jogamp.vecmath.Point3d;
-import org.jogamp.vecmath.Vector3d;
-
 import org.jogamp.java3d.utils.behaviors.sensor.SensorBeamEcho;
 import org.jogamp.java3d.utils.behaviors.sensor.SensorButtonListener;
 import org.jogamp.java3d.utils.behaviors.sensor.SensorEvent;
@@ -75,6 +69,12 @@ import org.jogamp.java3d.utils.universe.ConfiguredUniverse;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.java3d.utils.universe.Viewer;
 import org.jogamp.java3d.utils.universe.ViewingPlatform;
+import org.jogamp.vecmath.AxisAngle4d;
+import org.jogamp.vecmath.Color3f;
+import org.jogamp.vecmath.Matrix3d;
+import org.jogamp.vecmath.Matrix4d;
+import org.jogamp.vecmath.Point3d;
+import org.jogamp.vecmath.Vector3d;
 
 /**
  * Manipulates view platform transforms using a motion-tracked wand or mouse
@@ -618,7 +618,7 @@ public class WandViewBehavior extends ViewPlatformBehavior {
      * the Java 3D behavior scheduler.
      */
     @Override
-    public void processStimulus(Enumeration criteria) {
+    public void processStimulus(Iterator<WakeupCriterion> criteria) {
         // Invoke the sensor event dispatcher.
         eventAgent.dispatchEvents() ;
 

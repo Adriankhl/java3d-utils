@@ -45,7 +45,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.jogamp.java3d.Behavior;
@@ -55,7 +55,6 @@ import org.jogamp.java3d.WakeupCriterion;
 import org.jogamp.java3d.WakeupOnAWTEvent;
 import org.jogamp.java3d.WakeupOnBehaviorPost;
 import org.jogamp.java3d.WakeupOr;
-
 import org.jogamp.java3d.internal.J3dUtilsI18N;
 
 
@@ -265,7 +264,7 @@ public abstract class MouseBehavior extends Behavior
    * All mouse manipulators must implement this.
    */
   @Override
-  public abstract void processStimulus (Enumeration criteria);
+  public abstract void processStimulus (Iterator<WakeupCriterion> criteria);
 
     /**
      * Adds this behavior as a MouseListener, mouseWheelListener and MouseMotionListener to

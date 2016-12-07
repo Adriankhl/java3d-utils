@@ -49,7 +49,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.net.URL;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.jogamp.java3d.AmbientLight;
@@ -232,9 +232,9 @@ public class Lw3dLoader extends TextfileParser implements Loader {
 		    debugOutputLn(TIME, "done loading at " +
 			    System.currentTimeMillis());
 		    LwsObject cloneObject = null;
-		    for (Enumeration e = objectList.elements() ;
-			 e.hasMoreElements() ;) {
-			LwsObject tmpObj = (LwsObject)e.nextElement();
+		    for (Iterator e = objectList.iterator() ;
+			 e.hasNext() ;) {
+			LwsObject tmpObj = (LwsObject)e.next();
 			if (tmpObj.fileName != null &&
 			    tmpObj.fileName.equals(filename)) {
 			    cloneObject = tmpObj;
@@ -334,9 +334,9 @@ public class Lw3dLoader extends TextfileParser implements Loader {
 	scene.setSceneGroup(sceneGroupNode);
 
 	// now add named objects to the scenes name table
-	for (Enumeration e = objectList.elements(); e.hasMoreElements() ;) {
+	for (Iterator e = objectList.iterator(); e.hasNext() ;) {
 
-	    LwsObject obj = (LwsObject)e.nextElement();
+	    LwsObject obj = (LwsObject)e.next();
 	    if (obj.fileName != null)
 		scene.addNamedObject(obj.fileName,(Object)obj.getObjectNode());
 	    else if (obj.objName != null)
@@ -419,9 +419,9 @@ public class Lw3dLoader extends TextfileParser implements Loader {
      */
     void parentObjects() {
 	debugOutputLn(TRACE, "parentObjects()");
-	for (Enumeration e = objectList.elements(); e.hasMoreElements(); ) {
+	for (Iterator e = objectList.iterator(); e.hasNext(); ) {
 
-	    LwsObject obj = (LwsObject)e.nextElement();
+	    LwsObject obj = (LwsObject)e.next();
 	    if (obj.getParent() != -1) {
 
 		LwsObject parent = (LwsObject)
@@ -544,9 +544,9 @@ public class Lw3dLoader extends TextfileParser implements Loader {
 	    String indexString = bracketsString.substring(1, bracketEndIndex);
 	    indexNumber = (new Integer(indexString)).intValue();
 	}
-	for (Enumeration e = objectList.elements() ;
-	     e.hasMoreElements() ;) {
-	    LwsObject tempObj = (LwsObject)e.nextElement();
+	for (Iterator e = objectList.iterator() ;
+	     e.hasNext() ;) {
+	    LwsObject tempObj = (LwsObject)e.next();
 	    debugOutputLn(VALUES, "tempObj, file, objname = " +
 			       tempObj + tempObj.fileName +
 			       tempObj.objName);
@@ -617,10 +617,10 @@ public class Lw3dLoader extends TextfileParser implements Loader {
      */
     void addLights() {
 	// Add lights to the scene
-	for (Enumeration e1 = lightList.elements(); e1.hasMoreElements(); ) {
+	for (Iterator e1 = lightList.iterator(); e1.hasNext(); ) {
 
 	    debugOutputLn(LINE_TRACE, "adding light to scene group");
-	    LwsLight light = (LwsLight)e1.nextElement();
+	    LwsLight light = (LwsLight)e1.next();
 
 	    if (light.getObjectNode() != null) {
 		// scope light to the lw3d scene
@@ -700,9 +700,9 @@ public class Lw3dLoader extends TextfileParser implements Loader {
      */
     void addBehaviors() {
         if (!sceneBehaviors.isEmpty()) {
-           Enumeration e = sceneBehaviors.elements();
-           while (e.hasMoreElements()) {
-             scene.addBehaviorNode((Behavior)e.nextElement());
+        	Iterator e = sceneBehaviors.iterator();
+           while (e.hasNext()) {
+             scene.addBehaviorNode((Behavior)e.next());
            }
         }
     }

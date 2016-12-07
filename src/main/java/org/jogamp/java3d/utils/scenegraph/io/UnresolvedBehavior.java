@@ -39,15 +39,20 @@
 
 package org.jogamp.java3d.utils.scenegraph.io;
 
+import java.util.Iterator;
+
+import org.jogamp.java3d.Behavior;
+import org.jogamp.java3d.WakeupCriterion;
+
 /**
  * This Behavior is used in place of any behaviors which can not
  * be instantiated when a scene graph is read. This behavior is
- * always disabled when it initalizes. It just provides an indicator
+ * always disabled when it initializes. It just provides an indicator
  * in the scene graph that a Behavior is missing.
  *
  * This normally means the Behavior is not present in the classpath.
  */
-public class UnresolvedBehavior extends org.jogamp.java3d.Behavior {
+public class UnresolvedBehavior extends Behavior {
 
     @Override
     public void initialize() {
@@ -55,7 +60,7 @@ public class UnresolvedBehavior extends org.jogamp.java3d.Behavior {
     }
 
     @Override
-    public void processStimulus(java.util.Enumeration enumeration) {
+    public void processStimulus(Iterator<WakeupCriterion> criteria) {
     }
 
 }

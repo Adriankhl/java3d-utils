@@ -41,7 +41,7 @@ package org.jogamp.java3d.loaders.lw3d;
 
 import java.io.FileNotFoundException;
 import java.net.URL;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.jogamp.java3d.Appearance;
@@ -113,10 +113,10 @@ class J3dLwoParser extends LwoParser {
 	GeometryArray object;
 	LwoTexture texture;
 
-	for (Enumeration e = shapeList.elements();
-	     e.hasMoreElements() ;) {
+	for (Iterator e = shapeList.iterator();
+	     e.hasNext() ;) {
 	    int vertexFormat = org.jogamp.java3d.GeometryArray.COORDINATES;
-	    ShapeHolder shape = (ShapeHolder)e.nextElement();
+	    ShapeHolder shape = (ShapeHolder)e.next();
 	    debugOutputLn(LINE_TRACE, "about to create Arrays for Shape");
 	    debugOutputLn(VALUES, "shape = " + shape);
 	    shape.createArrays(true);

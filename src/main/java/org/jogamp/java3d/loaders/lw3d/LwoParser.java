@@ -44,7 +44,7 @@ package org.jogamp.java3d.loaders.lw3d;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.jogamp.java3d.loaders.IncorrectFormatException;
@@ -145,9 +145,9 @@ class LwoParser extends ParserObject {
 	* surface and the same geometry type (point, line, or poly)
 	*/
     ShapeHolder getAppropriateShape(int numSurf, int numVerts) {
-	for (Enumeration e = shapeList.elements();
-	     e.hasMoreElements() ;) {
-	    ShapeHolder shape = (ShapeHolder)e.nextElement();
+	for (Iterator e = shapeList.iterator();
+	     e.hasNext() ;) {
+	    ShapeHolder shape = (ShapeHolder)e.next();
 	    if (shape.numSurf == numSurf)
 		if (shape.numVerts == numVerts ||
 		    (shape.numVerts > 3 &&

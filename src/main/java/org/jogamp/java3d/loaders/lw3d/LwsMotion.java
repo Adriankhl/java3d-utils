@@ -40,7 +40,7 @@
 package org.jogamp.java3d.loaders.lw3d;
 
 import java.io.StreamTokenizer;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.jogamp.java3d.Alpha;
@@ -266,10 +266,10 @@ class LwsMotion extends TextfileParser {
 
 		// Recreate frames array from newFramesList
 		LwsFrame newFrames[] = new LwsFrame[newFramesList.size()];
-		Enumeration elements = newFramesList.elements();
+		Iterator elements = newFramesList.iterator();
 		int index = 0;
-		while (elements.hasMoreElements()) {
-			newFrames[index++] = (LwsFrame)elements.nextElement();
+		while (elements.hasNext()) {
+			newFrames[index++] = (LwsFrame)elements.next();
 		}
 		frames = newFrames;
 		numFrames = frames.length;

@@ -39,8 +39,8 @@
 
 package org.jogamp.java3d.utils.universe;
 
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import org.jogamp.java3d.BranchGroup;
 import org.jogamp.java3d.Group;
@@ -48,10 +48,9 @@ import org.jogamp.java3d.Transform3D;
 import org.jogamp.java3d.TransformGroup;
 import org.jogamp.java3d.View;
 import org.jogamp.java3d.ViewPlatform;
-import org.jogamp.vecmath.Vector3d;
-
 import org.jogamp.java3d.internal.J3dUtilsI18N;
 import org.jogamp.java3d.utils.behaviors.vp.ViewPlatformBehavior;
+import org.jogamp.vecmath.Vector3d;
 
 /**
  * This class is used to set up the "view" side of a Java 3D scene graph.
@@ -190,10 +189,10 @@ public class ViewingPlatform extends BranchGroup {
 	tg.addChild(vp);
         viewPlatform = vp;
         // Assign this to all Viewers.
-        Enumeration e = viewerList.keys();
+        Iterator<Viewer> e = viewerList.keySet().iterator();
 
-        while (e.hasMoreElements())
-            ((Viewer)e.nextElement()).setViewingPlatform(this);
+        while (e.hasNext())
+            e.next().setViewingPlatform(this);
     }
 
     /**

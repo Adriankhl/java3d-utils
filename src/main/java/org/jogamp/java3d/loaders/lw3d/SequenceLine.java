@@ -43,7 +43,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StreamTokenizer;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Hashtable;
 
 import org.jogamp.java3d.Alpha;
@@ -208,10 +208,10 @@ class SequenceLine {
 		    Link newLink = new Link(newSharedGroup);
 		    s.addChild(newLink);
 		    if (objParser.getJava3dShapeList() != null) {
-			for (Enumeration e =
-				 objParser.getJava3dShapeList().elements() ;
-			     e.hasMoreElements() ;) {
-			    t.addChild((Shape3D)e.nextElement());
+			for (Iterator e =
+				 objParser.getJava3dShapeList().iterator() ;
+			     e.hasNext() ;) {
+			    t.addChild((Shape3D)e.next());
 			}
 		    }
 		}
@@ -245,9 +245,9 @@ class SequenceLine {
 	    objParser.createJava3dGeometry();
 	    TransformGroup t = new TransformGroup();
 	    if (objParser.getJava3dShapeList() != null) {
-		for (Enumeration e = objParser.getJava3dShapeList().elements() ;
-		     e.hasMoreElements() ;) {
-		    t.addChild((Shape3D)e.nextElement());
+		for (Iterator e = objParser.getJava3dShapeList().iterator() ;
+		     e.hasNext() ;) {
+		    t.addChild((Shape3D)e.next());
 		}
 	    }
 		SharedGroup newSharedGroup = new SharedGroup();

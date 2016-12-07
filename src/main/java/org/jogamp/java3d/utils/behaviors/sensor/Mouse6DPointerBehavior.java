@@ -39,7 +39,7 @@
 
 package org.jogamp.java3d.utils.behaviors.sensor ;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import org.jogamp.java3d.Behavior;
 import org.jogamp.java3d.Sensor;
@@ -47,6 +47,7 @@ import org.jogamp.java3d.Shape3D;
 import org.jogamp.java3d.Transform3D;
 import org.jogamp.java3d.TransformGroup;
 import org.jogamp.java3d.WakeupCondition;
+import org.jogamp.java3d.WakeupCriterion;
 import org.jogamp.java3d.WakeupOnElapsedFrames;
 import org.jogamp.vecmath.Point3d;
 import org.jogamp.vecmath.Vector3f;
@@ -168,7 +169,7 @@ public class Mouse6DPointerBehavior extends Behavior {
      * Java 3D behavior scheduler.
      */
     @Override
-    public void processStimulus(Enumeration criteria) {
+    public void processStimulus(Iterator<WakeupCriterion> criteria) {
 	eventAgent.dispatchEvents() ;
 	wakeupOn(conditions) ;
     }

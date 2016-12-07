@@ -43,7 +43,7 @@ import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.jogamp.java3d.Behavior;
@@ -95,14 +95,14 @@ public class KeyNavigatorBehavior extends Behavior implements KeyListener {
      *  Override Behavior's stimulus method to handle the event.
      */
     @Override
-    public void processStimulus(Enumeration criteria) {
+    public void processStimulus(Iterator<WakeupCriterion> criteria) {
 	WakeupOnAWTEvent ev;
 	WakeupCriterion genericEvt;
 	AWTEvent[] events;
 	boolean sawFrame = false;
 
-	while (criteria.hasMoreElements()) {
-	    genericEvt = (WakeupCriterion) criteria.nextElement();
+	while (criteria.hasNext()) {
+	    genericEvt = criteria.next();
 	    if (genericEvt instanceof WakeupOnAWTEvent) {
 		ev = (WakeupOnAWTEvent) genericEvt;
 		events = ev.getAWTEvent();

@@ -40,11 +40,11 @@
  package org.jogamp.java3d.loaders.lw3d;
 
 
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import org.jogamp.java3d.Alpha;
 import org.jogamp.java3d.Switch;
-
+import org.jogamp.java3d.WakeupCriterion;
 import org.jogamp.java3d.internal.J3dUtilsI18N;
 
 /**
@@ -87,11 +87,11 @@ class SwitchPathInterpolator extends FloatValueInterpolator {
     /**
      * This method sets the correct child for the Switch node according
      * to alpha
-     * @param criteria enumeration of criteria that have triggered this wakeup
+     * @param criteria Iterator of criteria that have triggered this wakeup
      */
 
     @Override
-    public void processStimulus(Enumeration criteria) {
+    public void processStimulus(Iterator<WakeupCriterion> criteria) {
 
 	int child;
 

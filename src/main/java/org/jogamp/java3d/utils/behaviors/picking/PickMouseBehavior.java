@@ -42,7 +42,7 @@ package org.jogamp.java3d.utils.behaviors.picking;
 import java.awt.AWTEvent;
 import java.awt.Event;
 import java.awt.event.MouseEvent;
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import org.jogamp.java3d.Behavior;
 import org.jogamp.java3d.Bounds;
@@ -120,13 +120,13 @@ public abstract class PickMouseBehavior extends Behavior {
   }
 
   @Override
-  public void processStimulus (Enumeration criteria) {
+  public void processStimulus (Iterator<WakeupCriterion> criteria) {
     WakeupCriterion wakeup;
     AWTEvent[] evt = null;
     int xpos = 0, ypos = 0;
 
-    while(criteria.hasMoreElements()) {
-      wakeup = (WakeupCriterion)criteria.nextElement();
+    while(criteria.hasNext()) {
+      wakeup = criteria.next();
       if (wakeup instanceof WakeupOnAWTEvent)
 	evt = ((WakeupOnAWTEvent)wakeup).getAWTEvent();
     }

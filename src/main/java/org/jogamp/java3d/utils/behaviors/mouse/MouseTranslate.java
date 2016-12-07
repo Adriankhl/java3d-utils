@@ -42,7 +42,7 @@ package org.jogamp.java3d.utils.behaviors.mouse;
 import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import org.jogamp.java3d.Transform3D;
 import org.jogamp.java3d.TransformGroup;
@@ -178,15 +178,15 @@ public class MouseTranslate extends MouseBehavior {
     }
 
     @Override
-    public void processStimulus (Enumeration criteria) {
+    public void processStimulus (Iterator<WakeupCriterion> criteria) {
 	WakeupCriterion wakeup;
 	AWTEvent[] events;
  	MouseEvent evt;
 // 	int id;
 // 	int dx, dy;
 
-	while (criteria.hasMoreElements()) {
-	    wakeup = (WakeupCriterion) criteria.nextElement();
+	while (criteria.hasNext()) {
+	    wakeup = criteria.next();
 
 	    if (wakeup instanceof WakeupOnAWTEvent) {
 		events = ((WakeupOnAWTEvent)wakeup).getAWTEvent();

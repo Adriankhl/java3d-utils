@@ -46,7 +46,7 @@ import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -495,12 +495,12 @@ class LwsObject extends TextfileParser implements LwsPrimitive {
 		}
 		if (objParser.getJava3dShapeList() != null) {
 		    shapeList = objParser.getJava3dShapeList();
-		    for (Enumeration e = shapeList.elements() ;
-			 e.hasMoreElements() ;) {
+		    for (Iterator e = shapeList.iterator() ;
+			 e.hasNext() ;) {
 			if (!hasPivot || pivotTransGroup == null)
-			    objectTransform.addChild((Shape3D)e.nextElement());
+			    objectTransform.addChild((Shape3D)e.next());
 			else
-			    pivotTransGroup.addChild((Shape3D)e.nextElement());
+			    pivotTransGroup.addChild((Shape3D)e.next());
 		    }
 		}
 	    }
@@ -508,10 +508,10 @@ class LwsObject extends TextfileParser implements LwsPrimitive {
 		// Already read that file: Clone original object
 		debugOutputLn(LINE_TRACE, "Cloning shapes");
 		Vector cloneShapeList = cloneObject.getShapeList();
-		for (Enumeration e = cloneShapeList.elements() ;
-		     e.hasMoreElements() ;) {
+		for (Iterator e = cloneShapeList.iterator() ;
+		     e.hasNext() ;) {
 		    debugOutputLn(LINE_TRACE, "   shape clone");
-		    Shape3D shape = (Shape3D)e.nextElement();
+		    Shape3D shape = (Shape3D)e.next();
 		    Shape3D cloneShape = (Shape3D)shape.cloneTree();
 		    objectTransform.addChild(cloneShape);
 		}

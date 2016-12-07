@@ -39,9 +39,10 @@
 
 package org.jogamp.java3d.loaders.lw3d;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import org.jogamp.java3d.Alpha;
+import org.jogamp.java3d.WakeupCriterion;
 
 /**
  * This Interpolator object modifies the intensity of a Light object
@@ -66,11 +67,11 @@ class LightIntensityPathInterpolator extends FloatValueInterpolator {
      * appropriate light intensity for that time as obtained by interpolating
      * between the light intensity values for each knot point that were passed
      * to this class.
-     * @param criteria enumeration of criteria that have triggered this wakeup
+     * @param criteria Iterator of criteria that have triggered this wakeup
      */
 
     @Override
-    public void processStimulus(Enumeration criteria) {
+    public void processStimulus(Iterator<WakeupCriterion> criteria) {
         // Handle stimulus
 
         if (this.getAlpha() != null) {

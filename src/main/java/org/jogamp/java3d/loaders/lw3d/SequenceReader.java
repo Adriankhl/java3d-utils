@@ -44,7 +44,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StreamTokenizer;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.jogamp.java3d.Alpha;
@@ -113,13 +113,13 @@ class SequenceReader {
 
 	objectTransform = new TransformGroup();
         behaviorVector = new Vector();
-	Enumeration e = sequenceLines.elements();
+        Iterator e = sequenceLines.iterator();
 	Switch switchNode = new Switch();
 	switchNode.setCapability(Switch.ALLOW_SWITCH_READ);
 	switchNode.setCapability(Switch.ALLOW_SWITCH_WRITE);
 	objectTransform.addChild(switchNode);
-	while (e.hasMoreElements()) {
-	    SequenceLine line = (SequenceLine)e.nextElement();
+	while (e.hasNext()) {
+	    SequenceLine line = (SequenceLine)e.next();
 	    line.createJava3dObjects(debugVals, loadBehaviors);
 	    if (line.getGeometry() != null)
 	      switchNode.addChild(line.getGeometry());
@@ -158,9 +158,9 @@ class SequenceReader {
     }
 
     void printLines() {
-	Enumeration e = sequenceLines.elements();
-	while (e.hasMoreElements()) {
-	    SequenceLine line = (SequenceLine)e.nextElement();
+    	Iterator e = sequenceLines.iterator();
+	while (e.hasNext()) {
+	    SequenceLine line = (SequenceLine)e.next();
 	}
     }
 

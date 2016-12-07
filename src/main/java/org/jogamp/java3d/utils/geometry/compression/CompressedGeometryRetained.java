@@ -71,7 +71,7 @@ class CompressedGeometryRetained extends Object {
     private static final int HEADER_BUFFER_DATA_OFFSET = 4 ;
 
     // The OpenGL compressed geometry extensions use bits instead of
-    // enumerations to represent the type of compressed geometry.
+    // enums to represent the type of compressed geometry.
     static final byte TYPE_POINT = 1 ;
     static final byte TYPE_LINE = 2 ;
     static final byte TYPE_TRIANGLE = 4 ;

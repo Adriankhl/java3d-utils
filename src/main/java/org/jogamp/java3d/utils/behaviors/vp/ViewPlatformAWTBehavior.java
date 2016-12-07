@@ -46,13 +46,14 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.jogamp.java3d.Canvas3D;
 import org.jogamp.java3d.Transform3D;
 import org.jogamp.java3d.WakeupCondition;
+import org.jogamp.java3d.WakeupCriterion;
 import org.jogamp.java3d.WakeupOnBehaviorPost;
 import org.jogamp.java3d.WakeupOnElapsedFrames;
-
 import org.jogamp.java3d.utils.universe.Viewer;
 import org.jogamp.java3d.utils.universe.ViewingPlatform;
 
@@ -199,11 +200,11 @@ implements MouseListener, MouseMotionListener, KeyListener, MouseWheelListener {
      * Java 3D behavior scheduler.
      */
     @Override
-    public void processStimulus( java.util.Enumeration behEnum ) {
+    public void processStimulus( Iterator<WakeupCriterion> behEnum ) {
         boolean hadPost = false;
 
-        while(behEnum.hasMoreElements()) {
-            WakeupCondition wakeup = (WakeupCondition)behEnum.nextElement();
+        while(behEnum.hasNext()) {
+            WakeupCondition wakeup = behEnum.next();
             if (wakeup instanceof WakeupOnBehaviorPost) {
                 hadPost = true;
             } else if (wakeup instanceof WakeupOnElapsedFrames) {
