@@ -37,7 +37,6 @@ import org.jogamp.java3d.GeometryArray;
 import org.jogamp.java3d.J3DBuffer;
 import org.jogamp.java3d.Shape3D;
 import org.jogamp.java3d.TriangleArray;
-import org.jogamp.java3d.utils.shader.SimpleShaderAppearance;
 
 /**
  * Note Cube does not have normals and so cannot be used for lit geometries

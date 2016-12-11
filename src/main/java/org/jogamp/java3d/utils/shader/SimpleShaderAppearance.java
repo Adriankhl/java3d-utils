@@ -174,6 +174,9 @@ public class SimpleShaderAppearance extends ShaderAppearance
 	private static HashMap<GLSLShaderProgram, String> vertexShaderSources = new HashMap<GLSLShaderProgram, String>();
 	private static HashMap<GLSLShaderProgram, String> fragmentShaderSources = new HashMap<GLSLShaderProgram, String>();
 
+	private static ShaderAttributeSet baseMapShaderAttributeSet = null;
+	private static HashMap<String, ShaderAttributeSet> shaderAttributeSetCache = new HashMap<String, ShaderAttributeSet>();
+
 	private boolean buildBasedOnAttributes = false;
 
 	// we can't set it in the super class as tex coord gen is not supported in the pipeline
@@ -384,8 +387,7 @@ public class SimpleShaderAppearance extends ShaderAppearance
 							|| this.getPolygonAttributes().getCapability(PolygonAttributes.ALLOW_MODE_READ))//poly attributes are live but can be read
 					
 					// finally we must be allowed to set the shader program while live
-					&& ((!this.isLive() && !this.isCompiled()) || (this.getCapability(ALLOW_SHADER_PROGRAM_WRITE)))
-			)
+					&& ((!this.isLive() && !this.isCompiled()) || (this.getCapability(ALLOW_SHADER_PROGRAM_WRITE))))
 			{
 				boolean hasTexture = this.getTexture() != null || this.getTextureUnitCount() > 0;
 				if (this.getTextureUnitCount() > 0)
@@ -690,22 +692,38 @@ public class SimpleShaderAppearance extends ShaderAppearance
 		vertexShaderSource = vertexShaderSources.get(shaderProgram);
 		fragmentShaderSource = fragmentShaderSources.get(shaderProgram);
 
+		//It is REALLY important for render performance to try to have the same shader program object 
+		// and the exact same shader attribute set object
 		if (hasTexture)
 		{
-			ShaderAttributeSet shaderAttributeSet = new ShaderAttributeSet();
-			shaderAttributeSet.put(new ShaderAttributeValue("BaseMap", new Integer(0)));
 			if (texCoordGenModeObjLinear)
 			{
 				Vector4f planeS = new Vector4f();
 				texCoordGeneration.getPlaneS(planeS);
 				Vector4f planeT = new Vector4f();
 				texCoordGeneration.getPlaneT(planeT);
-
+				String key = "planeS " + planeS + " planeT " + planeT;
+				ShaderAttributeSet shaderAttributeSet = shaderAttributeSetCache.get(key);
+				if (shaderAttributeSet == null)
+				{
+					shaderAttributeSet = new ShaderAttributeSet();
+					shaderAttributeSet.put(new ShaderAttributeValue("BaseMap", new Integer(0)));
 				shaderAttributeSet.put(new ShaderAttributeValue("texCoordGenPlaneS", planeS));
 				shaderAttributeSet.put(new ShaderAttributeValue("texCoordGenPlaneT", planeT));
+					shaderAttributeSetCache.put(key, shaderAttributeSet);
+				}
+				setShaderAttributeSet(shaderAttributeSet);
+			}
+			else
+			{
+				if (baseMapShaderAttributeSet == null)
+				{
+					baseMapShaderAttributeSet = new ShaderAttributeSet();
+					baseMapShaderAttributeSet.put(new ShaderAttributeValue("BaseMap", new Integer(0)));
+				}
+				setShaderAttributeSet(baseMapShaderAttributeSet);
 			}
 
-			setShaderAttributeSet(shaderAttributeSet);
 		}
 
 	}
