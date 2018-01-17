@@ -2076,7 +2076,9 @@ public class Stripifier {
 		    }
 		    if (hasColors) colors[count] = currStrip.istream[j].color;
 		    if (colorStrips) stripColors[count] =
-					 new org.jogamp.vecmath.Color3b(stripColor);
+					 new org.jogamp.vecmath.Color3b((byte)stripColor.getRed(),
+							 (byte)stripColor.getGreen(),
+							 (byte)stripColor.getBlue());
 		    count++;
 		}
 	    }
