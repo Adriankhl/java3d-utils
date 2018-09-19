@@ -47,6 +47,7 @@ import org.jogamp.java3d.TexCoordGeneration;
 import org.jogamp.java3d.Texture;
 import org.jogamp.java3d.TextureAttributes;
 import org.jogamp.java3d.TextureUnitState;
+import org.jogamp.java3d.Transform3D;
 import org.jogamp.java3d.TransparencyAttributes;
 import org.jogamp.vecmath.Color3f;
 import org.jogamp.vecmath.Vector4f;
@@ -201,6 +202,8 @@ public class SimpleShaderAppearance extends ShaderAppearance
 			"	uniform int numberOfLights;\n" + //
 			constMaxLights + //
 			"	uniform lightSource glLightSource[maxLights];\n"; //
+	
+ 
 
 	private static HashMap<Integer, GLSLShaderProgram> shaderPrograms = new HashMap<Integer, GLSLShaderProgram>();
 
@@ -256,7 +259,8 @@ public class SimpleShaderAppearance extends ShaderAppearance
 		{
 			boolean hasTextureCoordGen = false;
 			boolean texCoordGenModeObjLinear = false;
-			build(hasTexture, lit, hasTextureCoordGen, texCoordGenModeObjLinear);
+			boolean hasTextureAttributeTransform = false;
+			build(hasTexture, lit, hasTextureCoordGen, texCoordGenModeObjLinear, hasTextureAttributeTransform);
 		}
 		else
 		{
@@ -405,7 +409,7 @@ public class SimpleShaderAppearance extends ShaderAppearance
 		return shaders;
 	}
 
-	private void rebuildShaders()
+	public void rebuildShaders()
 	{
 		if (buildBasedOnAttributes)
 		{
@@ -438,14 +442,29 @@ public class SimpleShaderAppearance extends ShaderAppearance
 
 				boolean texCoordGenModeObjLinear = hasTextureCoordGen
 						&& (texCoordGeneration.getGenMode() == TexCoordGeneration.OBJECT_LINEAR);
-				build(hasTexture, lit, hasTextureCoordGen, texCoordGenModeObjLinear);
+								
+				boolean hasTextureAttributeTransform = false;
+				if (this.getTexture() != null && this.getTextureAttributes() != null)
+				{
+					Transform3D t = new Transform3D();
+					this.getTextureAttributes().getTextureTransform(t);
+					hasTextureAttributeTransform = t.getBestType() != Transform3D.IDENTITY;
+				}
+				else if(this.getTextureUnitCount() > 0)
+				{
+					//only the first is dealt with?
+					Transform3D t = new Transform3D();
+					this.getTextureUnitState(0).getTextureAttributes().getTextureTransform(t);
+					hasTextureAttributeTransform = t.getBestType() != Transform3D.IDENTITY;
+				}
+				build(hasTexture, lit, hasTextureCoordGen, texCoordGenModeObjLinear, hasTextureAttributeTransform);
 			}
 		}
 	}
 
-	private void build(boolean hasTexture, boolean lit, boolean hasTextureCoordGen, boolean texCoordGenModeObjLinear)
+	private void build(boolean hasTexture, boolean lit, boolean hasTextureCoordGen, boolean texCoordGenModeObjLinear, boolean hasTextureAttributeTransform)
 	{
-		int shaderKey = (hasTexture ? 1 : 0) + (lit ? 2 : 0) + (hasTextureCoordGen ? 4 : 0) + (texCoordGenModeObjLinear ? 8 : 0);
+		int shaderKey = (hasTexture ? 1 : 0) + (lit ? 2 : 0) + (hasTextureCoordGen ? 4 : 0) + (texCoordGenModeObjLinear ? 8 : 0) + (hasTextureAttributeTransform ? 16 : 0);
 
 		GLSLShaderProgram shaderProgram = shaderPrograms.get(new Integer(shaderKey));
 		if (shaderProgram == null)
@@ -480,6 +499,10 @@ public class SimpleShaderAppearance extends ShaderAppearance
 				if (hasTexture && !hasTextureCoordGen)
 				{
 					vertexProgram += vertexAttributeInString + " vec2 glMultiTexCoord0;\n";
+				}
+				if(hasTextureAttributeTransform)
+				{
+					vertexProgram += "uniform mat4 textureTransform;\n";
 				}
 				vertexProgram += "uniform mat4 glModelViewProjectionMatrix;\n";
 				vertexProgram += "uniform mat4 glModelViewMatrix;\n";
@@ -522,7 +545,14 @@ public class SimpleShaderAppearance extends ShaderAppearance
 				{
 					if (!hasTextureCoordGen)
 					{
-						vertexProgram += "glTexCoord0 = glMultiTexCoord0.st;\n";
+						if(hasTextureAttributeTransform)
+						{
+							vertexProgram += "glTexCoord0 = (textureTransform * vec4(glMultiTexCoord0,0,1)).st;\n";
+						}
+						else
+						{
+							vertexProgram += "glTexCoord0 = glMultiTexCoord0.st;\n";
+						}
 					}
 					else
 					{
@@ -534,7 +564,7 @@ public class SimpleShaderAppearance extends ShaderAppearance
 						{
 							System.err.println("texCoordGeneration.getGenMode() not supported " + texCoordGeneration.getGenMode());
 						}
-					}
+					}						 
 				}
 
 				vertexProgram += "vec3 v = vec3(glModelViewMatrix * glVertex);\n";
@@ -644,12 +674,42 @@ public class SimpleShaderAppearance extends ShaderAppearance
 				if (hasTexture)
 				{
 					vertexProgram += vertexAttributeInString + " vec4 glVertex;\n";
-					vertexProgram += vertexAttributeInString + " vec2 glMultiTexCoord0;\n";
+					if (hasTexture && !hasTextureCoordGen)
+					{
+						vertexProgram += vertexAttributeInString + " vec2 glMultiTexCoord0;\n";
+					}
+					if(hasTextureAttributeTransform)
+					{
+						vertexProgram += "uniform mat4 textureTransform;\n";
+					}
 					vertexProgram += "uniform mat4 glModelViewProjectionMatrix;\n";
 					vertexProgram += outString + " vec2 glTexCoord0;\n";
 					vertexProgram += "void main( void ){\n";
 					vertexProgram += "gl_Position = glModelViewProjectionMatrix * glVertex;\n";
-					vertexProgram += "glTexCoord0 = glMultiTexCoord0.st;\n";
+					
+					if (!hasTextureCoordGen)
+					{
+						if(hasTextureAttributeTransform)
+						{
+							vertexProgram += "glTexCoord0 = (textureTransform * vec4(glMultiTexCoord0,0,1)).st;\n";
+						}
+						else
+						{
+							vertexProgram += "glTexCoord0 = glMultiTexCoord0.st;\n";
+						}
+					}
+					else
+					{
+						if (texCoordGenModeObjLinear)
+						{
+							vertexProgram += "glTexCoord0 = object_linear(glVertex, texCoordGenPlaneS, texCoordGenPlaneT);\n";
+						}
+						else
+						{
+							System.err.println("texCoordGeneration.getGenMode() not supported " + texCoordGeneration.getGenMode());
+						}
+					}	
+
 					vertexProgram += "}";
 
 					fragmentProgram += "precision mediump float;\n";
@@ -822,6 +882,10 @@ public class SimpleShaderAppearance extends ShaderAppearance
 		rebuildShaders();
 	}
 
+	/**
+	 * Note if the texture transform is updated after the TextureAttributes are set then 
+	 * rebuild will need to be called on this Appearance
+	 */
 	@Override
 	public void setTextureAttributes(TextureAttributes textureAttributes)
 	{
@@ -841,6 +905,7 @@ public class SimpleShaderAppearance extends ShaderAppearance
 	@Override
 	public void setTextureUnitState(TextureUnitState[] stateArray)
 	{
+		//TODO: need to address the texture coord generator that might be hidden in here?
 		System.out.println("SimpleShaderAppearance with textureunitstates in use");
 		super.setTextureUnitState(stateArray);
 		rebuildShaders();
