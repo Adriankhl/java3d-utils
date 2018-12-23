@@ -357,7 +357,9 @@ public class MainFrame extends Frame implements
 	// I suspect that in a future release, JavaSoft will add an
 	// audio content handler which encapsulates this, and then
 	// we can just do a getContent just like for images.
-	return new sun.applet.AppletAudioClip( url );
+    	// JDK 11 would use this: return com.sun.media.sound.JavaSoundAudioClip.create( url );
+    	// however that is not available prior to jdk 10, so it is better to simply un-support this method
+    	throw new UnsupportedOperationException();
     }
 
     @Override
