@@ -802,9 +802,9 @@ public class SimpleShaderAppearance extends ShaderAppearance {
 			vertexShaderSources.put(shaderProgram, vertexProgram);
 			fragmentShaderSources.put(shaderProgram, fragmentProgram);
 
-			System.out.println("shaderkey = " + shaderKey);
-			System.out.println(vertexProgram);
-			System.out.println(fragmentProgram);
+			//System.out.println("shaderkey = " + shaderKey);
+			//System.out.println(vertexProgram);
+			//System.out.println(fragmentProgram);
 			if (hasTexture) {
 				if (texCoordGeneration != null &&
 						(texCoordGeneration.getGenMode() == TexCoordGeneration.OBJECT_LINEAR
