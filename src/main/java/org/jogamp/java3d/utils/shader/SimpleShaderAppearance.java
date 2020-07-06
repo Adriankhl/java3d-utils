@@ -85,7 +85,7 @@ public class SimpleShaderAppearance extends ShaderAppearance {
 	private static String	fragColorVar			= "gl_FragColor";
 	private static String	vertexAttributeInString	= "attribute";
 	private static String	texture2D				= "texture2D";
-	private static String	constMaxLightsStr		= "	const int maxLights = (gl_MaxVaryingVectors - 6) / 3;\n";
+	private static String	constMaxLightsStr		= "	const int maxLights = (gl_MaxVaryingVectors - 6) / 4;\n";
 
 	// a wee discussion on the max varying versus lights issue
 	//https://www.khronos.org/opengles/sdk/docs/reference_cards/OpenGL-ES-2_0-Reference-card.pdf
@@ -127,7 +127,7 @@ public class SimpleShaderAppearance extends ShaderAppearance {
 		fragColorVar = "gl_FragColor";
 		vertexAttributeInString = "attribute";
 		texture2D = "texture2D";
-		constMaxLightsStr = "	const int maxLights = (gl_MaxVaryingVectors - 6) / 3;\n";
+		constMaxLightsStr = "	const int maxLights = (gl_MaxVaryingVectors - 6) / 4;\n";
 	
 		shaderPrograms.clear();
 		vertexShaderSources.clear();
@@ -142,8 +142,11 @@ public class SimpleShaderAppearance extends ShaderAppearance {
 		fragColorVar = "glFragColor";
 		vertexAttributeInString = "in";
 		texture2D = "texture";
-		constMaxLightsStr = "	const int maxLights = (gl_MaxVaryingVectors - 6) / 3;\n";
+		constMaxLightsStr = "	const int maxLights = (gl_MaxVaryingVectors - 6) / 4;\n";
 		
+		shadowCalculation = shadowCalculation.replace("texture2D(", "texture(");
+		
+				
 		shaderPrograms.clear();
 		vertexShaderSources.clear();
 		fragmentShaderSources.clear();
@@ -205,11 +208,42 @@ public class SimpleShaderAppearance extends ShaderAppearance {
 			"		float constantAttenuation, linearAttenuation, quadraticAttenuation;\n" + //
 			"		float spotCutoff, spotExponent;\n" + //
 			"		vec3 spotDirection;\n" + //
+			"		mat4 projMatrix;\n"+//
 			"	};\n" + //
 			"\n" + //
 			"	uniform int numberOfLights;\n" + //
 			constMaxLightsStr + //
-			"	uniform lightSource glLightSource[maxLights];\n"; //																				
+			"	uniform lightSource glLightSource[maxLights];\n"; //	
+	
+
+	public static String shadowCalculation = //
+	"float ShadowCalculation(vec4 fragPosLightSpace, sampler2DShadow shadowMap, float bias)\n" + //
+	"{\n" + //
+	     // perform perspective divide
+	"    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;\n" + //
+	    // transform to [0,1] range
+	"    projCoords = projCoords * 0.5 + 0.5;\n" + //
+	    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+//	"    float closestDepth = texture2D(shadowMap, projCoords.xy).r; \n" + //
+	    // get depth of current fragment from light's perspective
+	"    float currentDepth = projCoords.z;\n" + //
+	    // check whether current frag pos is in shadow
+	//"   float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;\n" + //
+	"   float shadow = 0.0;\n" + //
+	"   vec2 texelSize = 1.0 / vec2(textureSize(shadowMap, 0));\n" + //
+	"   for(int x = -1; x <= 1; ++x) {\n" + //
+	"       for(int y = -1; y <= 1; ++y) {\n" + //
+	//"           float pcfDepth = " + texture2D + "(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; \n" + //
+	//"           shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0; \n" + // 
+	"            shadow += texture2D(shadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, currentDepth - bias)); \n" + //
+	"       }    \n" + //
+	"   }\n" + //
+	"   shadow /= 9.0;\n" + //
+	"   if(projCoords.z > 1.0)\n" + //
+	"       shadow = 0.0;\n" + //
+    
+	"   return shadow;\n" + //
+	"}  \n";
 
 	private static HashMap<Integer, GLSLShaderProgram>	shaderPrograms				= new HashMap<Integer, GLSLShaderProgram>();
 
@@ -556,6 +590,7 @@ public class SimpleShaderAppearance extends ShaderAppearance {
 				}
 				vertexProgram += "uniform mat4 glModelViewProjectionMatrix;\n";
 				vertexProgram += "uniform mat4 glModelViewMatrix;\n";
+				vertexProgram += "uniform mat4 glModelMatrix;\n";
 				vertexProgram += "uniform mat3 glNormalMatrix;\n";
 				vertexProgram += "uniform int ignoreVertexColors;\n";
 				vertexProgram += "uniform vec4 glLightModelambient;\n";
@@ -578,6 +613,7 @@ public class SimpleShaderAppearance extends ShaderAppearance {
 				vertexProgram += outString + "  vec4 lightsD[maxLights];\n";
 				vertexProgram += outString + "  vec3 lightsS[maxLights];\n";
 				vertexProgram += outString + "  vec3 lightsLightDir[maxLights];\n";
+				vertexProgram += outString + "  vec4 fragPosLightSpace[maxLights];\n";
 				vertexProgram += outString + "  float shininess;\n";
 				if (hasTextureCoordGen) {
 					vertexProgram += "vec2 texlinear(vec4 pos, vec4 planeOS, vec4 planeOT)\n";
@@ -629,9 +665,10 @@ public class SimpleShaderAppearance extends ShaderAppearance {
 
 				vertexProgram += "for (int index = 0; index < numberOfLights && index < maxLights; index++) // for all light sources\n";
 				vertexProgram += "{	\n";
-				vertexProgram += "	lightsD[index] = glLightSource[index].diffuse * glFrontMaterial.diffuse;	\n";
+				vertexProgram += "	lightsD[index] = glLightSource[index].diffuse * glFrontMaterial.diffuse;\n";
 				vertexProgram += "	lightsS[index] = glLightSource[index].specular.rgb * glFrontMaterial.specular;\n";
-				vertexProgram += "	lightsLightDir[index] = glLightSource[index].position.xyz;	\n";
+				vertexProgram += "	lightsLightDir[index] = glLightSource[index].position.xyz;\n";
+				vertexProgram += "	fragPosLightSpace[index] = glLightSource[index].projMatrix * glModelMatrix * glVertex;\n";
 				vertexProgram += "}\n";
 				vertexProgram += "}";
 
@@ -645,8 +682,8 @@ public class SimpleShaderAppearance extends ShaderAppearance {
 
 					fragmentProgram += inString + " vec2 glTexCoord0;\n";
 					fragmentProgram += "uniform sampler2D BaseMap;\n";
-				}
-				fragmentProgram += "uniform int numberOfLights;\n";
+				}						
+				
 				fragmentProgram += inString + " vec3 ViewVec;\n";
 
 				fragmentProgram += inString + " vec3 N;\n";
@@ -656,12 +693,18 @@ public class SimpleShaderAppearance extends ShaderAppearance {
 
 				fragmentProgram += inString + " vec3 emissive;\n";
 				fragmentProgram += inString + " float shininess;\n";
+				fragmentProgram += "uniform int numberOfLights;\n";		
 				fragmentProgram += constMaxLightsStr;
+				fragmentProgram += "uniform sampler2DShadow shadowMapSampler[maxLights]; \n"; 
 				fragmentProgram += inString + " vec4 lightsD[maxLights]; \n";
 				fragmentProgram += inString + " vec3 lightsS[maxLights]; \n";
 				fragmentProgram += inString + " vec3 lightsLightDir[maxLights]; \n";
+				fragmentProgram += inString + " vec4 fragPosLightSpace[maxLights]; \n";				
 
-				fragmentProgram += fragColorDec;
+				fragmentProgram += fragColorDec;				
+				
+				fragmentProgram += shadowCalculation;
+				
 				fragmentProgram += "void main( void ){\n ";
 				if (hasTexture) {
 					fragmentProgram += "vec4 baseMap = " + texture2D + "( BaseMap, glTexCoord0.st );\n";
@@ -679,6 +722,7 @@ public class SimpleShaderAppearance extends ShaderAppearance {
 				fragmentProgram += "vec3 normal = N;\n";
 				fragmentProgram += "vec3 E = normalize(ViewVec);\n";
 				fragmentProgram += "float EdotN = max( dot(normal, E), 0.0 );\n";
+				
 
 				fragmentProgram += "for (int index = 0; index < numberOfLights && index < maxLights; index++) // for all light sources\n";
 				fragmentProgram += "{ 	\n";
@@ -688,9 +732,14 @@ public class SimpleShaderAppearance extends ShaderAppearance {
 				fragmentProgram += "	float NdotL = max( dot(normal, L), 0.0 );\n";
 				fragmentProgram += "	float NdotH = max( dot(normal, H), 0.0 );	\n";
 				fragmentProgram += "	float NdotNegL = max( dot(normal, -L), 0.0 );	\n";
+				
+				fragmentProgram += "	float bias = max(0.05 * 1.0 - NdotL, 0.005);\n";  
+				//fragmentProgram += "	bias *= 0.5;\n";  // this needs to be based on the z buffer depth of the shadow map
+				fragmentProgram += "	float shadow = ShadowCalculation(fragPosLightSpace[index], shadowMapSampler[index], bias);   \n";    
 
-				fragmentProgram += "	diffuse = diffuse + (lightsD[index].rgb * NdotL);\n";
-				fragmentProgram += "	spec = spec + (lightsS[index] * pow(NdotH, 0.3*shininess));\n";
+				// add lighting in at the multiple of shadowing
+				fragmentProgram += "	diffuse = diffuse + ((lightsD[index].rgb * NdotL) * (1.0 - shadow));\n";
+				fragmentProgram += "	spec = spec + (lightsS[index] * pow(NdotH, 0.3*shininess) * (1.0 - shadow));\n";  
 				fragmentProgram += "}\n";
 
 				fragmentProgram += "color.rgb = albedo * (diffuse + emissive) + spec;\n";
@@ -699,9 +748,10 @@ public class SimpleShaderAppearance extends ShaderAppearance {
 				} else {
 					fragmentProgram += "color.a = C.a;\n";
 				}
-
+								
 				fragmentProgram += "color.a *= transparencyAlpha;\n";
 				fragmentProgram += fragColorVar + " = color;\n";
+										 
 
 				//for debug of the incorrect looking tex coord gen values
 				//if (hasTexture)
@@ -721,8 +771,7 @@ public class SimpleShaderAppearance extends ShaderAppearance {
 					}
 					vertexProgram += "uniform mat4 glModelViewProjectionMatrix;\n";
 					vertexProgram += outString + " vec2 glTexCoord0;\n";
-					vertexProgram += "void main( void ){\n";
-					vertexProgram += "gl_Position = glModelViewProjectionMatrix * glVertex;\n";
+					vertexProgram += "void main( void ){\n";					vertexProgram += "gl_Position = glModelViewProjectionMatrix * glVertex;\n";
 
 					if (!hasTextureCoordGen) {
 						if (hasTextureAttributeTransform) {
