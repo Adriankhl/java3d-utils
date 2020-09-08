@@ -4,7 +4,7 @@
 
 	<groupId>org.jogamp.java3d</groupId>
 	<artifactId>java3d-utils</artifactId>
-	<version>1.7.0</version>
+	<version>1.7.0-khl</version>
 
 	<name>Java 3D Utils</name>
 	<description>Utility functions for the Java 3D Graphics API</description>
@@ -80,6 +80,13 @@
 		<url>https://github.com/philjord/java3d-utils</url>
 	</scm>
 
+        <repositories>
+                <repository>
+                        <id>jitpack.io</id>
+                        <url>https://jitpack.io</url>
+                </repository>
+        </repositories>
+
 	<properties>
 		<jogamp.version>2.3.2</jogamp.version>
 
@@ -93,12 +100,12 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>com.github.Adriankhl</groupId>
 			<artifactId>java3d-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>com.github.Adriankhl</groupId>
 			<artifactId>vecmath</artifactId>
 			<version>${project.version}</version>
 		</dependency>
